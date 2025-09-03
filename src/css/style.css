@@ -152,6 +152,7 @@ input:checked + .slider::before {
     border: none;
     outline: none;
     background-color: transparent;
+    color: var(--secondary-text);
 }
 
 .filter button {
