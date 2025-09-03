@@ -216,3 +216,27 @@ input:checked + .slider::before {
     background-color: var(--btn-colors);
     color: var(--primary-text-dark);
 }
+
+/* navigation settings */
+.navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.numberPage {
+    font-family: var(--inter);
+    font-weight: 700;
+    color: var(--secondary-text);
+}
+
+.navigation button {
+    padding: .5rem;
+    background-color: var(--btn-colors);
+    color: var(--primary-text-dark);
+    border: none;
+    outline: none;
+    border-radius: 3rem;
+}
