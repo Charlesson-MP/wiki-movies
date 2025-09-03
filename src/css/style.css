@@ -26,6 +26,15 @@
     box-sizing: border-box;
 }
 
+/* body settings */
+.bodyLightTheme {
+    background-color:  var(--light-background);
+}
+
+.bodyDarkTheme {
+    background-color: var(--dark-background);
+}
+
 /* header settings */
 header {
     display: flex;
@@ -33,7 +42,16 @@ header {
     align-items: center;
     padding: 0 1rem;
     margin-bottom: 2rem;
-    box-shadow: 0 .4rem 1rem rgba(0, 0, 0, 0.411);
+}
+
+.headerLightTheme {
+    background-color: var(--light-background);
+    box-shadow: 0 .4rem .5rem rgba(0, 0, 0, 0.2);
+}
+
+.headerDarkTheme {
+    background-color: var(--dark-background);
+    box-shadow: 0 .4rem .5rem rgba(255, 255, 255, 0.2);
 }
 
 .logo {
@@ -51,7 +69,14 @@ h1 {
     font-family: var(--nunito);
     font-weight: 800;
     font-size: 1.5rem;
+}
+
+.titleLightTheme {
     color: var(--primary-text-light);
+}
+
+.titleDarkTheme {
+    color: var(--primary-text-dark);
 }
 
 .destaque {
@@ -126,6 +151,7 @@ input:checked + .slider::before {
     padding-left: .5rem;
     border: none;
     outline: none;
+    background-color: transparent;
 }
 
 .filter button {
