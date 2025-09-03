@@ -32,3 +32,4 @@ themeToogle.addEventListener('change', () => {
         title.classList.add('titleLightTheme');
     }
 });
+
