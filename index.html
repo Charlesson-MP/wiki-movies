@@ -4,11 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./src/images/favicon.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="./src/css/style.css">
     <title>WikiMovies</title>
 </head>
 <body>
-    
+    <header>
+        <div class="logo">
+            <img src="./src/images/logo-light-theme.png" alt="Logo da página">
+            <h1>Wiki<span>Movies</span></h1>
+        </div>
+        <div class="themeControls">
+            <span class="material-symbols-outlined">
+                brightness_7
+            </span>
+            <input type="checkbox" id="themeToogle">
+            <span class="slider"></span>
+            <span class="material-symbols-outlined">
+                dark_mode
+            </span>
+        </div>
+    </header>
+    <main>
+        <div class="filter">
+            <input type="text" name="movieName" id="movieName">
+            <button type="button" class="btnSearch">Procurar</button>
+        </div>
+        <div class="containerMovies">
+            <div class="cardMovie">
+                <div class="overlay"></div>
+            </div>
+        </div>
+    </main>
     <script src="./src/scripts/script.js"></script>
 </body>
 </html>
