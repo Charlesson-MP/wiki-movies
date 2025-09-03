@@ -9,7 +9,7 @@
     --light-background: #F8F8F8;
     --dark-background: #0c0c0c;
     --btn-colors: #E63946;
-    --btn-hover-colors: #457B9D;
+    --btn-hover-colors: #ff727e;
     --primary-text-light: #132E45;
     --primary-text-dark: #fff;
     --secondary-text: #6C757D;
@@ -24,6 +24,10 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+body {
+    position: relative;
 }
 
 /* body settings */
@@ -163,6 +167,12 @@ input:checked + .slider::before {
     font-family: var(--inter);
     font-weight: 700;
     color: var(--light-background);
+    cursor: pointer;
+}
+
+.filter button:hover {
+    background-color: var(--btn-hover-colors);
+    border-color: var(--btn-hover-colors);
 }
 
 /* containerMovies settings */
@@ -175,15 +185,21 @@ input:checked + .slider::before {
 }
 
 .cardMovie {
-    width: 18rem;
-    height: 20rem;
+    position: relative;
+    height: 22rem;
     border-radius: 1rem;
     overflow: hidden;
-    cursor: pointer;
     background-color: darkgray;
 }
 
+.cardMovie img {
+    width: 15rem;
+}
+
 .overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
     opacity: 0;
     width: 100%;
     height: 100%;
@@ -215,6 +231,11 @@ input:checked + .slider::before {
     font-weight: 700;
     background-color: var(--btn-colors);
     color: var(--primary-text-dark);
+    cursor: pointer;
+}
+
+.overlay button:hover {
+    background-color: var(--btn-hover-colors);
 }
 
 /* navigation settings */
@@ -239,4 +260,16 @@ input:checked + .slider::before {
     border: none;
     outline: none;
     border-radius: 3rem;
+    cursor: pointer;
+}
+
+.navigation button:hover {
+    background-color: var(--btn-hover-colors);
+}
+
+/* lager screens */
+@media screen and (min-width: 48rem) {
+    .filter label {
+        width: 50%;
+    }
 }
