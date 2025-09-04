@@ -93,6 +93,7 @@ h1 {
     height: 1rem;
     border-radius: 50%;
     background-color: var(--light-background);
+    transition: transform .1s;
 }
 
 input:checked + .slider::before {
