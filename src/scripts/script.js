@@ -6,6 +6,18 @@ const body = document.querySelector('body');
 const header = document.querySelector('header');
 const logoImg = document.querySelector('.logo img');
 const title = document.querySelector('h1');
+const logo = document.querySelector('.logo');
+
+logo.addEventListener('click', () => {
+    showMovies();
+    setButtons();
+    numberPage.textContent = 1;
+    currentPage = 1;
+});
+
+const btnPrev = document.querySelector('.prev');
+const btnNext = document.querySelector('.next');
+const numberPage = document.querySelector('.numberPage');
 
 themeToogle.addEventListener('change', () => {
     if(themeToogle.checked) {
@@ -38,19 +50,53 @@ const API_KEY = '00a7e4e48d512ff2fd6a51f14146d5a7';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const BASE_IMG_URL = 'https://image.tmdb.org/t/p/w500/';
 let currentPage = 1;
+let queryURL;
 
 const moviesContainer = document.querySelector('.containerMovies');
 
-async function getMovies(page) {
-    const response = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=pt-BR&page=${page}`);
-    
-    return response.json();
+const inputMovieName = document.querySelector('#movieName');
+let movieName;
+const btnSearchMovie = document.querySelector('.btnSearch');
+
+async function searchMovie() {
+    try {
+        movieName = inputMovieName.value.trim();
+        queryURL = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(movieName)}&page=1`;
+
+        currentPage = 1;
+        numberPage.textContent = currentPage;
+
+        showMovies(queryURL);
+    }catch(error) {
+        console.error(error);
+    }
+
+    inputMovieName.value = '';
+    setButtons();    
 }
 
-async function showMovies(page = 1) {
-    try {
-        const data = await getMovies(currentPage);
+function setButtons() {
+    btnPrev.disabled = true;
+    btnPrev.classList.add('disabledBtn');
 
+    btnNext.disabled = false;
+    btnNext.classList.remove('disabledBtn');
+}
+
+btnSearchMovie.addEventListener('click', () => searchMovie());
+
+async function showMovies(URL, page = 1) {
+    try {
+        const response = await fetch(URL || `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=pt-BR&page=${page}`);
+
+        const data = await response.json();
+
+        console.log(data);
+
+        if(moviesContainer.children) {
+            [...moviesContainer.children].forEach(filme => filme.remove());
+        }
+        
         data.results.forEach(filme => {
 
             const movieCard = document.createElement('div');
@@ -76,6 +122,11 @@ async function showMovies(page = 1) {
             moviesContainer.appendChild(movieCard);
         })
 
+        if(data.page === data.total_pages) {
+            btnNext.disabled = true;
+            btnNext.classList.add('disabledBtn');
+        }
+
     }catch(error) {
         console.error('Tipo de erro: ', error);
     }
@@ -83,24 +134,41 @@ async function showMovies(page = 1) {
 
 showMovies();
 
-const btnPrev = document.querySelector('.prev');
-const btnNext = document.querySelector('.next');
-const numberPage = document.querySelector('.numberPage');
-
 btnPrev.addEventListener('click', () => {
     [...moviesContainer.children].forEach(filme => filme.remove());
-    showMovies(--currentPage);
+
+    currentPage--;
+    if(queryURL) {
+        queryURL = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(movieName)}&page=${currentPage}`;
+    }
+    showMovies(queryURL, currentPage);
 
     numberPage.textContent = currentPage;
 
-    if(currentPage === 1) btnPrev.disabled = true;
+    if(currentPage === 1) {
+        btnPrev.disabled = true;
+        btnPrev.classList.add('disabledBtn');
+    }
+
+    if(btnNext.disabled) {
+        btnNext.disabled = false;
+        btnNext.classList.remove('disabledBtn');
+    }
 });
 
 btnNext.addEventListener('click', () => {
-    if(btnPrev.disabled) btnPrev.disabled = false;
+    if(btnPrev.disabled) {
+        btnPrev.disabled = false;
+        btnPrev.classList.remove('disabledBtn');
+    }
 
     [...moviesContainer.children].forEach(filme => filme.remove());
-    showMovies(++currentPage);
+    
+    currentPage++;
+    if(queryURL) {
+        queryURL = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(movieName)}&page=${currentPage}`;
+    }
+    showMovies(queryURL, currentPage);
 
     numberPage.textContent = currentPage;
 });
