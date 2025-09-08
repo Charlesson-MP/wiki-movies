@@ -28,6 +28,7 @@
 
 body {
     position: relative;
+    min-height: 100vh;
 }
 
 /* body settings */
@@ -271,6 +272,21 @@ input:checked + .slider::before {
 
 .navigation button:hover {
     background-color: var(--btn-hover-colors);
+}
+
+/* notFoundScreen settings */
+.notFoundContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--nunito);
+    color: var(--secondary-text);
+}
+
+.notFoundContainer span {
+    font-size: 5rem;
 }
 
 /* lager screens */
