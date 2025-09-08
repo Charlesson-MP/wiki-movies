@@ -96,31 +96,46 @@ async function showMovies(URL, page = 1) {
         if(moviesContainer.children) {
             [...moviesContainer.children].forEach(filme => filme.remove());
         }
-        
-        data.results.forEach(filme => {
 
-            const movieCard = document.createElement('div');
-            movieCard.classList.add('cardMovie');
+        if(!data.results.length) {
+            const notFoundContainer = document.createElement('div');
+            notFoundContainer.classList.add('notFoundContainer');
+            
+            const notFoundIcon = document.createElement('span');
+            notFoundIcon.classList.add('material-symbols-outlined');
+            notFoundIcon.textContent = 'movie_off';
 
-            const moviePoster = document.createElement('img');
-            moviePoster.setAttribute('src', `${BASE_IMG_URL}${filme.poster_path}`);
-            moviePoster.setAttribute('alt', 'Capa do filme');
+            const notFoundText = document.createElement('p');
+            notFoundText.textContent = 'Filme não encontrado.';
 
-            const overlayMovieCard = document.createElement('div');
-            overlayMovieCard.classList.add('overlay');
+            notFoundContainer.append(notFoundIcon, notFoundText);
+            moviesContainer.appendChild(notFoundContainer);
+        }else {
+            data.results.forEach(filme => {
 
-            const movieTitle = document.createElement('h2');
-            movieTitle.textContent = filme.title;
+                const movieCard = document.createElement('div');
+                movieCard.classList.add('cardMovie');
 
-            const btnDetais = document.createElement('button');
-            btnDetais.textContent = 'Detalhes';
+                const moviePoster = document.createElement('img');
+                moviePoster.setAttribute('src', `${BASE_IMG_URL}${filme.poster_path}`);
+                moviePoster.setAttribute('alt', 'Capa do filme');
 
-            overlayMovieCard.append(movieTitle, btnDetais);
+                const overlayMovieCard = document.createElement('div');
+                overlayMovieCard.classList.add('overlay');
 
-            movieCard.append(moviePoster, overlayMovieCard);
+                const movieTitle = document.createElement('h2');
+                movieTitle.textContent = filme.title;
 
-            moviesContainer.appendChild(movieCard);
-        })
+                const btnDetais = document.createElement('button');
+                btnDetais.textContent = 'Detalhes';
+
+                overlayMovieCard.append(movieTitle, btnDetais);
+
+                movieCard.append(moviePoster, overlayMovieCard);
+
+                moviesContainer.appendChild(movieCard);
+            })
+        }
 
         if(data.page === data.total_pages) {
             btnNext.disabled = true;
