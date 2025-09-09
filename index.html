@@ -26,14 +26,17 @@
         </label>
     </header>
     <main>
-        <div class="filter">
-            <label for="movieName">
-                <span class="material-symbols-outlined">
-                    search
-                </span>
-                <input type="text" name="movieName" id="movieName" placeholder="Digite o nome do filme">
-            </label>
-            <button type="button" class="btnSearch" >Procurar</button>
+        <div class="containerFilter">
+            <div class="filter">
+                <label for="movieName">
+                    <span class="material-symbols-outlined">
+                        search
+                    </span>
+                    <input type="text" name="movieName" id="movieName" placeholder="Digite o nome do filme">
+                </label>
+                <button type="button" class="btnSearch" >Procurar</button>
+            </div>
+            <p class="hideMsgErro">Nome do filme não informado</p>
         </div>
         <div class="containerMovies">
             <!-- <div class="cardMovie">
