@@ -13,6 +13,7 @@ logo.addEventListener('click', () => {
     setButtons();
     numberPage.textContent = 1;
     currentPage = 1;
+    queryURL = '';
 });
 
 const btnPrev = document.querySelector('.prev');
@@ -71,20 +72,33 @@ let movieName;
 const btnSearchMovie = document.querySelector('.btnSearch');
 
 async function searchMovie() {
-    try {
-        movieName = inputMovieName.value.trim();
+    movieName = inputMovieName.value.trim();
+    
+    if(movieName) {
         queryURL = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(movieName)}&page=1`;
-
         currentPage = 1;
         numberPage.textContent = currentPage;
+        try {
+            showMovies(queryURL);
+        }catch(error) {
+            console.error(error);
+        }
 
-        showMovies(queryURL);
-    }catch(error) {
-        console.error(error);
+        inputMovieName.value = '';
+        setButtons();  
+    }else {
+        const label = document.querySelector('.filter label');
+        label.classList.add('balanceLabel');
+
+        const msgError = document.querySelector('.containerFilter p');
+        msgError.classList.remove('hideMsgErro');
+
+        setTimeout(() => {
+            label.classList.remove('balanceLabel');
+            msgError.classList.add('hideMsgErro');
+        }, 500)
     }
-
-    inputMovieName.value = '';
-    setButtons();    
+    
 }
 
 function setButtons() {
