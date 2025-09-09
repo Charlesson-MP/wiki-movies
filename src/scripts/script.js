@@ -20,6 +20,8 @@ const btnNext = document.querySelector('.next');
 const numberPage = document.querySelector('.numberPage');
 
 themeToogle.addEventListener('change', () => {
+    const detailsCard = document.querySelector('.detailsMovieCard');
+    
     if(themeToogle.checked) {
         // removing light theme
         body.classList.remove('bodyLightTheme');
@@ -31,6 +33,11 @@ themeToogle.addEventListener('change', () => {
         header.classList.add('headerDarkTheme');
         logoImg.setAttribute('src', './src/images/logo-dark-theme.png')
         title.classList.add('titleDarkTheme');
+
+        // setting theme of detailsCard
+        if(detailsCard) {
+            detailsCard.classList.add('detailsMovieCardDark');
+        }
     }else {
         // removing dark theme
         body.classList.remove('bodyDarkTheme');
@@ -42,6 +49,11 @@ themeToogle.addEventListener('change', () => {
         header.classList.add('headerLightTheme');
         logoImg.setAttribute('src', './src/images/logo-light-theme.png')
         title.classList.add('titleLightTheme');
+
+        // setting theme of detailsCard
+        if(detailsCard) {
+            detailsCard.classList.remove('detailsMovieCardDark');
+        }
     }
 });
 
@@ -81,6 +93,57 @@ function setButtons() {
 
     btnNext.disabled = false;
     btnNext.classList.remove('disabledBtn');
+}
+
+const main = document.querySelector('main');
+
+function showDetailsMovieScreen(movie) {
+    const detailsMovieContainer = document.createElement('div');
+    detailsMovieContainer.classList.add('detailsMovieContainer');
+
+    const detailsMovieCard = document.createElement('div');
+    detailsMovieCard.classList.add('detailsMovieCard');
+    if(themeToogle.checked) detailsMovieCard.classList.add('detailsMovieCardDark')
+
+    const detailsMovieCardHeader = document.createElement('div');
+    detailsMovieCardHeader.classList.add('detailsCardHeader');
+    const btnClose = document.createElement('button');
+    btnClose.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+
+    btnClose.addEventListener('click', () => {
+        detailsMovieContainer.remove();
+    });
+
+    detailsMovieCardHeader.appendChild(btnClose);
+
+    const detailsCardCover = document.createElement('img');
+    detailsCardCover.setAttribute('src', `${BASE_IMG_URL}${movie.poster_path}`);
+    detailsCardCover.setAttribute('alt', 'Capa do filme');
+
+    const detailsCardInfo = document.createElement('div');
+    detailsCardInfo.classList.add('detailsCardInfo');
+    
+    const mainTitle = document.createElement('h2');
+    mainTitle.textContent = `${movie.title ? movie.title : 'Indisponível'}`;
+    const enTitle = document.createElement('p');
+    enTitle.innerHTML = `<span>Título original:</span> ${movie.original_title ? movie.original_title : 'Indisponível'}`;
+    const originalLang = document.createElement('p');
+    originalLang.innerHTML = `<span>Idioma original:</span> ${movie.original_language ? movie.original_language.toUpperCase() : 'Indisponível'}`;
+    const popularity = document.createElement('p');
+    popularity.innerHTML = `<span>Popularidade:</span> ${movie.popularity ? movie.popularity : 'Indisponível'}`;
+    const releaseDate = document.createElement('p');
+    const date = movie.release_date.split('-');
+    releaseDate.innerHTML = `<span>Data de lançamento:</span> ${date[0] ? date[2] + '/' + date[1] + '/' + date[0] : 'Indisponível'}`;
+    const average = document.createElement('p');
+    average.innerHTML = `<span>Média:</span> ${movie.vote_average ? movie.vote_average : 'Indisponível'}`;
+    const overview = document.createElement('p');
+    overview.innerHTML = `<span>Descrição:</span> ${movie.overview === '' ? 'Indisponível': movie.overview}`;
+
+    detailsCardInfo.append(mainTitle, enTitle, originalLang, popularity, releaseDate, average, overview);
+
+    detailsMovieCard.append(detailsMovieCardHeader, detailsCardCover, detailsCardInfo);
+    detailsMovieContainer.appendChild(detailsMovieCard);
+    main.appendChild(detailsMovieContainer);
 }
 
 btnSearchMovie.addEventListener('click', () => searchMovie());
@@ -128,6 +191,8 @@ async function showMovies(URL, page = 1) {
 
                 const btnDetais = document.createElement('button');
                 btnDetais.textContent = 'Detalhes';
+
+                btnDetais.addEventListener('click', () => showDetailsMovieScreen(filme));
 
                 overlayMovieCard.append(movieTitle, btnDetais);
 
