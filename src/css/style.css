@@ -27,7 +27,6 @@
 }
 
 body {
-    position: relative;
     min-height: 100vh;
 }
 
@@ -46,7 +45,6 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 0 1rem;
-    margin-bottom: 2rem;
 }
 
 .headerLightTheme {
@@ -128,6 +126,12 @@ h1 {
 
 input:checked + .slider::before {
     transform: translateX(1rem);
+}
+
+/* main settings */
+main {
+    position: relative;
+    padding-top: 2rem;
 }
 
 /* filter settings */
@@ -289,9 +293,94 @@ input:checked + .slider::before {
     font-size: 5rem;
 }
 
+/* detailsMovie settings */
+.detailsMovieContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000057;
+    padding: 2rem;
+}
+
+.detailsMovieCard {
+    background-color: #fff;
+    border-radius: 2rem;
+    padding: 1rem 2rem;
+    max-width: 30rem;
+    font-family: var(--inter);
+    color: var(--primary-text-light);
+    font-size: .8rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin: auto;
+}
+
+.detailsMovieCardDark {
+    background-color: var(--dark-background);
+    border: .1rem solid var(--secondary-text);
+    color: var(--secondary-text);
+}
+
+.detailsCardHeader {
+    text-align: end;
+}
+
+.detailsCardHeader button {
+    padding: .5rem;
+    background-color: var(--btn-colors);
+    border: none;
+    border-radius: 50%;
+    color: var(--primary-text-dark);
+}
+
+.detailsCardHeader button:hover {
+    background-color: var(--btn-hover-colors);
+}
+
+.detailsMovieCard img {
+    width: 15rem;
+    min-height: 15rem;
+    background-color: var(--secondary-text);
+    margin: auto;
+}
+
+.detailsCardInfo h2 {
+    margin-bottom: 1rem;
+}
+
+.detailsCardInfo p span {
+    font-weight: 700;
+}
+
 /* lager screens */
 @media screen and (min-width: 48rem) {
     .filter label {
         width: 50%;
+    }
+
+    .detailsMovieCard {
+        max-width: 300rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: 3rem auto;
+        grid-template-areas: 
+            "cover header"
+            "cover info";
+        max-width: 50rem;
+    }
+
+    .detailsCardHeader {
+        grid-area: header;
+    }
+
+    .detailsMovieCard img {
+        grid-area: cover;
+    }
+
+    .detailsCardInfo {
+        grid-area: info;
     }
 }
