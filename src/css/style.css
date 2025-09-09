@@ -149,9 +149,109 @@ main {
     padding: .4rem;
 }
 
+.containerFilter p {
+    text-align: center;
+    margin-top: .2rem;
+    font-family: var(--inter);
+    color: var(--btn-colors);
+}
+
+.hideMsgErro {
+    opacity: 0;
+}
+
+.balanceLabel {
+    animation: balance .5s;
+    color: var(--btn-hover-colors);
+}
+
+
 .filter span {
     color: var(--secondary-text);
     margin-right: .3rem;
+}
+
+.balanceLabel input::placeholder, .balanceLabel span {
+    color: var(--btn-hover-colors);
+}
+
+@keyframes balance {
+    10% {
+        transform: translate(-0.1rem, -0.1rem);
+    }
+
+    15% {
+        transform: translate(-0.1rem, 0.1rem);
+    }
+
+    20% {
+        transform: translate(0.1rem, -0.1rem);
+    }
+
+    25% {
+        transform: translate(0rem, 0rem);
+    }
+
+    30% {
+        transform: translate(-0.1rem, -0.1rem);
+    }
+
+    35% {
+        transform: translate(0.1rem, -0.1rem);
+    }
+
+    40% {
+        transform: translate(-0.1rem, 0.1rem);
+    }
+
+    45% {
+        transform: translate(0rem, 0rem);
+    }
+
+    50% {
+        transform: translate(0.1rem, 0.1rem);
+    }
+
+    55% {
+        transform: translate(0.1rem, -0.1rem);
+    }
+
+    60% {
+        transform: translate(0.1rem, 0.1rem);
+    }
+
+    65% {
+        transform: translate(-0.1rem, -0.1rem);
+    }
+
+    70% {
+        transform: translate(-0.1rem, 0.1rem);
+    }
+
+    75% {
+        transform: translate(0.1rem, -0.1rem);
+    }
+
+    80% {
+        transform: translate(-0.1rem, -0.1rem);
+    }
+
+    85% {
+        transform: translate(0.1rem, 0.1rem);
+    }
+
+    90% {
+        transform: translate(-0.1rem, 0.1rem);
+    }
+
+    95% {
+        transform: translate(0.1rem, -0.1rem);
+    }
+
+    100% {
+        transform: translate(0, 0);
+        border-color: var(--btn-hover-colors);
+    }
 }
 
 .filter input {
@@ -162,6 +262,7 @@ main {
     outline: none;
     background-color: transparent;
     color: var(--secondary-text);
+    width: 100%;
 }
 
 .filter button {
