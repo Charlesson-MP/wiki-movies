@@ -55,8 +55,7 @@ Com ele, você pode:
 ## ⚙️ Como acessar o projeto
 
 ### 🔗 Online
-Se o projeto estiver publicado (por exemplo, no GitHub Pages ou Vercel), adicione o link aqui:  
-[WikiMovies Online](https://charlesson-mp.github.io/wiki-movies)
+Através do link da página: [WikiMovies Online](https://charlesson-mp.github.io/wiki-movies)
 
 ### 💻 Local
 1. Clone este repositório:
