@@ -1,124 +1,124 @@
-// theme slider
-const themeToogle = document.querySelector('#themeToogle');
-
-// header elements
+// Page elements
+const themeToggle = document.querySelector('#themeToggle');
 const body = document.querySelector('body');
 const header = document.querySelector('header');
 const logoImg = document.querySelector('.logo img');
 const title = document.querySelector('h1');
 const logo = document.querySelector('.logo');
-
-logo.addEventListener('click', () => {
-    showMovies();
-    setButtons();
-    numberPage.textContent = 1;
-    currentPage = 1;
-    queryURL = '';
-});
-
 const btnPrev = document.querySelector('.prev');
 const btnNext = document.querySelector('.next');
 const numberPage = document.querySelector('.numberPage');
+const main = document.querySelector('main');
+const moviesContainer = document.querySelector('.containerMovies');
+const inputMovieName = document.querySelector('#movieName');
+const btnSearchMovie = document.querySelector('.btnSearch');
 
-themeToogle.addEventListener('change', () => {
-    const detailsCard = document.querySelector('.detailsMovieCard');
-    
-    if(themeToogle.checked) {
-        // removing light theme
-        body.classList.remove('bodyLightTheme');
-        header.classList.remove('headerLightTheme');
-        title.classList.remove('titleLightTheme');
-
-        // adding dark theme
-        body.classList.add('bodyDarkTheme');
-        header.classList.add('headerDarkTheme');
-        logoImg.setAttribute('src', './src/images/logo-dark-theme.png')
-        title.classList.add('titleDarkTheme');
-
-        // setting theme of detailsCard
-        if(detailsCard) {
-            detailsCard.classList.add('detailsMovieCardDark');
-        }
-    }else {
-        // removing dark theme
-        body.classList.remove('bodyDarkTheme');
-        header.classList.remove('headerDarkTheme');
-        title.classList.remove('titleDarkTheme');
-
-        // adding dark theme
-        body.classList.add('bodyLightTheme');
-        header.classList.add('headerLightTheme');
-        logoImg.setAttribute('src', './src/images/logo-light-theme.png')
-        title.classList.add('titleLightTheme');
-
-        // setting theme of detailsCard
-        if(detailsCard) {
-            detailsCard.classList.remove('detailsMovieCardDark');
-        }
-    }
-});
-
-// request settings
+// Url parameters
 const API_KEY = '00a7e4e48d512ff2fd6a51f14146d5a7';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const BASE_IMG_URL = 'https://image.tmdb.org/t/p/w500/';
-let currentPage = 1;
-let queryURL;
+const INIT_URL = buildQueryURL();
 
-const moviesContainer = document.querySelector('.containerMovies');
-
-const inputMovieName = document.querySelector('#movieName');
+// Custom parameters
 let movieName;
-const btnSearchMovie = document.querySelector('.btnSearch');
+let currentPage = 1;
+
+// Logo event listener
+logo.addEventListener('click', () => {
+    showMovies(INIT_URL);
+});
+
+// Beginning of the theme change logic
+function removeTheme(theme) {
+    body.classList.remove(`body${theme}Theme`);
+    header.classList.remove(`header${theme}Theme`);
+    title.classList.remove(`title${theme}Theme`);
+}
+
+function addTheme(theme) {
+    body.classList.add(`body${theme}Theme`);
+    header.classList.add(`header${theme}Theme`);
+    logoImg.setAttribute('src', `./src/images/logo-${theme.toLowerCase()}-theme.png`)
+    title.classList.add(`title${theme}Theme`);
+
+    const detailsCard = document.querySelector('.detailsMovieCard');
+    if(detailsCard) {
+        detailsCard.classList.toggle('detailsMovieCardDark', theme === 'Dark');
+    }    
+}
+
+themeToggle.addEventListener('change', () => {    
+    const theme = themeToggle.checked ? 'Dark' : 'Light';
+    removeTheme(theme === 'Dark' ? 'Light' : 'Dark');
+    addTheme(theme);
+});
+// End of the theme change logic
+
+// Beginning of the search movie logic
+function buildQueryURL(searchTerm = '', page = 1) {
+    const isSearch = searchTerm.trim().length > 0;
+
+    return isSearch ? `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(searchTerm)}&page=${page}` : `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=pt-BR&page=${page}`;
+}
+
+function showInputError() {
+    const label = document.querySelector('.filter label');
+    const msgError = document.querySelector('.containerFilter p');
+
+    label.classList.add('balanceLabel');
+    msgError.classList.remove('hideMsgErro');
+
+    setTimeout(() => {
+        label.classList.remove('balanceLabel');
+        msgError.classList.add('hideMsgErro');
+    }, 500);
+}
 
 async function searchMovie() {
-    movieName = inputMovieName.value.trim();
-    
-    if(movieName) {
-        queryURL = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(movieName)}&page=1`;
-        currentPage = 1;
-        numberPage.textContent = currentPage;
-        try {
-            showMovies(queryURL);
-        }catch(error) {
-            console.error(error);
-        }
+    const searchTerm = inputMovieName.value.trim();
 
-        inputMovieName.value = '';
-        setButtons();  
-    }else {
-        const label = document.querySelector('.filter label');
-        label.classList.add('balanceLabel');
-
-        const msgError = document.querySelector('.containerFilter p');
-        msgError.classList.remove('hideMsgErro');
-
-        setTimeout(() => {
-            label.classList.remove('balanceLabel');
-            msgError.classList.add('hideMsgErro');
-        }, 500)
+    if(!searchTerm) {
+        showInputError();
+        return
     }
     
+    movieName = searchTerm;
+    
+    const searchURL = buildQueryURL(movieName);
+
+    try {
+        showMovies(searchURL);
+    }catch(error) {
+        console.error('Erro ao buscar filmes:', error);
+    }
+
+    inputMovieName.value = '';
+    updatePagination(); 
 }
 
-function setButtons() {
-    btnPrev.disabled = true;
-    btnPrev.classList.add('disabledBtn');
+btnSearchMovie.addEventListener('click', searchMovie);
+// End of the seach movie logic
 
-    btnNext.disabled = false;
-    btnNext.classList.remove('disabledBtn');
-}
-
-const main = document.querySelector('main');
-
-function showDetailsMovieScreen(movie) {
+// Beginning of the details movie card logic
+function createDetailsMovieContainer() {
     const detailsMovieContainer = document.createElement('div');
     detailsMovieContainer.classList.add('detailsMovieContainer');
 
+    return detailsMovieContainer;
+}
+
+function createDetailsMovieCard(header, cover , details) {
     const detailsMovieCard = document.createElement('div');
     detailsMovieCard.classList.add('detailsMovieCard');
-    if(themeToogle.checked) detailsMovieCard.classList.add('detailsMovieCardDark')
 
+    if(themeToggle.checked) detailsMovieCard.classList.add('detailsMovieCardDark');
+
+    detailsMovieCard.append(header, cover, details);
+
+    return detailsMovieCard;
+}
+
+function createDetailsCardHeader(detailsMovieContainer) {
     const detailsMovieCardHeader = document.createElement('div');
     detailsMovieCardHeader.classList.add('detailsCardHeader');
     const btnClose = document.createElement('button');
@@ -130,139 +130,186 @@ function showDetailsMovieScreen(movie) {
 
     detailsMovieCardHeader.appendChild(btnClose);
 
+    return detailsMovieCardHeader;
+}
+
+function createDetailsMovieCardCover(movie) {
     const detailsCardCover = document.createElement('img');
     detailsCardCover.setAttribute('src', `${BASE_IMG_URL}${movie.poster_path}`);
-    detailsCardCover.setAttribute('alt', 'Capa do filme');
+    detailsCardCover.setAttribute('alt', `Capa do filme ${movie.title}`);
 
+    detailsCardCover.onerror = () => {
+        detailsCardCover.src = './src/images/unavailable_cover.png';
+        detailsCardCover.alt = `Capa indisponível`;
+    }
+
+    return detailsCardCover;
+}
+
+function createDetailsMovieCardInfo(movie) {
     const detailsCardInfo = document.createElement('div');
     detailsCardInfo.classList.add('detailsCardInfo');
+
+    const safeValue = (value, fallback = 'Indisponível') => value || fallback;
     
-    const mainTitle = document.createElement('h2');
-    mainTitle.textContent = `${movie.title ? movie.title : 'Indisponível'}`;
+    const movieTitle = document.createElement('h2');
+    movieTitle.textContent = `${safeValue(movie.title)}`;
+
     const enTitle = document.createElement('p');
-    enTitle.innerHTML = `<span>Título original:</span> ${movie.original_title ? movie.original_title : 'Indisponível'}`;
+    enTitle.innerHTML = `<span>Título original:</span> ${safeValue(movie.original_title)}`;
+
     const originalLang = document.createElement('p');
-    originalLang.innerHTML = `<span>Idioma original:</span> ${movie.original_language ? movie.original_language.toUpperCase() : 'Indisponível'}`;
+    originalLang.innerHTML = `<span>Idioma original:</span> ${safeValue(movie.original_language.toUpperCase())}`;
+
     const popularity = document.createElement('p');
-    popularity.innerHTML = `<span>Popularidade:</span> ${movie.popularity ? movie.popularity : 'Indisponível'}`;
+    popularity.innerHTML = `<span>Popularidade:</span> ${safeValue(movie.popularity)}`;
+
     const releaseDate = document.createElement('p');
-    const date = movie.release_date.split('-');
-    releaseDate.innerHTML = `<span>Data de lançamento:</span> ${date[0] ? date[2] + '/' + date[1] + '/' + date[0] : 'Indisponível'}`;
+    if(movie.release_date) {
+        const [ year, month, day ] = movie.release_date.split('-');
+
+        releaseDate.innerHTML = `<span>Data de lançamento:</span> ${day + '/' + month + '/' + year}`;
+    }else {
+        releaseDate.innerHTML = '<span>Data de lançamento:</span> Indisponível';
+    }
+
     const average = document.createElement('p');
-    average.innerHTML = `<span>Média:</span> ${movie.vote_average ? movie.vote_average : 'Indisponível'}`;
+    average.innerHTML = `<span>Média:</span> ${safeValue(movie.vote_average)}`;
+
     const overview = document.createElement('p');
-    overview.innerHTML = `<span>Descrição:</span> ${movie.overview === '' ? 'Indisponível': movie.overview}`;
+    overview.innerHTML = `<span>Descrição:</span> ${safeValue(movie.overview)}`;
 
-    detailsCardInfo.append(mainTitle, enTitle, originalLang, popularity, releaseDate, average, overview);
+    detailsCardInfo.append(movieTitle, enTitle, originalLang, popularity, releaseDate, average, overview);
 
-    detailsMovieCard.append(detailsMovieCardHeader, detailsCardCover, detailsCardInfo);
+    return detailsCardInfo;
+}
+
+function showDetailsMovieScreen(movie) {
+    const detailsMovieContainer = createDetailsMovieContainer();
+    
+    const cardHeader = createDetailsCardHeader(detailsMovieContainer);
+    const cardCover = createDetailsMovieCardCover(movie);
+    const cardInfo = createDetailsMovieCardInfo(movie);
+
+    const detailsMovieCard = createDetailsMovieCard(cardHeader, cardCover, cardInfo);
     detailsMovieContainer.appendChild(detailsMovieCard);
     main.appendChild(detailsMovieContainer);
 }
+// End of the details movie card logic
 
-btnSearchMovie.addEventListener('click', () => searchMovie());
+// Beginning of the show movie logic
+function showNotFoundScreen() {
+    const notFoundContainer = document.createElement('div');
+    notFoundContainer.classList.add('notFoundContainer');
+    
+    const notFoundIcon = document.createElement('span');
+    notFoundIcon.classList.add('material-symbols-outlined');
+    notFoundIcon.textContent = 'movie_off';
 
-async function showMovies(URL, page = 1) {
+    const notFoundText = document.createElement('p');
+    notFoundText.textContent = 'Filme não encontrado.';
+
+    notFoundContainer.append(notFoundIcon, notFoundText);
+    moviesContainer.appendChild(notFoundContainer);
+}
+
+function clearMovies() {
+    [...moviesContainer.children].forEach(movie => movie.remove());
+}
+
+function createMovieCard(movie) {
+    const movieCard = document.createElement('div');
+    movieCard.classList.add('cardMovie');
+
+    const moviePoster = document.createElement('img');
+    moviePoster.setAttribute('src', `${BASE_IMG_URL}${movie.poster_path}`);
+    moviePoster.setAttribute('alt', `Capa do filme ${movie.title}`);
+
+    moviePoster.onerror = () => {
+        moviePoster.src = './src/images/unavailable_cover.png';
+        moviePoster.alt = 'Capa indisponível';
+    }
+
+    const overlayMovieCard = document.createElement('div');
+    overlayMovieCard.classList.add('overlay');
+
+    const movieTitle = document.createElement('h2');
+    movieTitle.textContent = movie.title;
+
+    const btnDetais = document.createElement('button');
+    btnDetais.textContent = 'Detalhes';
+
+    btnDetais.addEventListener('click', () => showDetailsMovieScreen(movie));
+
+    overlayMovieCard.append(movieTitle, btnDetais);
+
+    movieCard.append(moviePoster, overlayMovieCard);
+
+    return movieCard;
+}
+
+function updatePagination(data) {
+    btnPrev.disabled = data.page === 1;
+    btnPrev.classList.toggle('disabledBtn', data.page === 1);
+
+    btnNext.disabled = data.page === data.total_pages;
+    btnNext.classList.toggle('disabledBtn', data.page === data.total_pages);
+
+    numberPage.textContent = data.page;
+}
+
+async function showMovies(URL) {
     try {
-        const response = await fetch(URL || `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=pt-BR&page=${page}`);
-
+        const response = await fetch(URL);
         const data = await response.json();
 
-        console.log(data);
-
-        if(moviesContainer.children) {
-            [...moviesContainer.children].forEach(filme => filme.remove());
-        }
+        clearMovies();
 
         if(!data.results.length) {
-            const notFoundContainer = document.createElement('div');
-            notFoundContainer.classList.add('notFoundContainer');
-            
-            const notFoundIcon = document.createElement('span');
-            notFoundIcon.classList.add('material-symbols-outlined');
-            notFoundIcon.textContent = 'movie_off';
-
-            const notFoundText = document.createElement('p');
-            notFoundText.textContent = 'Filme não encontrado.';
-
-            notFoundContainer.append(notFoundIcon, notFoundText);
-            moviesContainer.appendChild(notFoundContainer);
-        }else {
-            data.results.forEach(filme => {
-
-                const movieCard = document.createElement('div');
-                movieCard.classList.add('cardMovie');
-
-                const moviePoster = document.createElement('img');
-                moviePoster.setAttribute('src', `${BASE_IMG_URL}${filme.poster_path}`);
-                moviePoster.setAttribute('alt', 'Capa do filme');
-
-                const overlayMovieCard = document.createElement('div');
-                overlayMovieCard.classList.add('overlay');
-
-                const movieTitle = document.createElement('h2');
-                movieTitle.textContent = filme.title;
-
-                const btnDetais = document.createElement('button');
-                btnDetais.textContent = 'Detalhes';
-
-                btnDetais.addEventListener('click', () => showDetailsMovieScreen(filme));
-
-                overlayMovieCard.append(movieTitle, btnDetais);
-
-                movieCard.append(moviePoster, overlayMovieCard);
-
-                moviesContainer.appendChild(movieCard);
-            })
+            showNotFoundScreen();
+            updatePagination(data);
+            return
         }
 
-        if(data.page === data.total_pages) {
-            btnNext.disabled = true;
-            btnNext.classList.add('disabledBtn');
-        }
+        data.results.forEach(movie => {
+            const movieCard = createMovieCard(movie);
+            moviesContainer.appendChild(movieCard);
+        });
+
+        updatePagination(data);
 
     }catch(error) {
-        console.error('Tipo de erro: ', error);
+        console.error('Erro ao carregar filmes: ', error);
     }
 }
 
-showMovies();
+showMovies(INIT_URL);
+// End of the show movie logic
 
-btnPrev.addEventListener('click', () => {
-    [...moviesContainer.children].forEach(filme => filme.remove());
+// Beginning of the changing pages logic
+btnPrev.addEventListener('click', async () => {
+    clearMovies()
 
     currentPage--;
-    if(queryURL) {
-        queryURL = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(movieName)}&page=${currentPage}`;
-    }
-    showMovies(queryURL, currentPage);
+    const searchURL = buildQueryURL(movieName, currentPage);
 
-    numberPage.textContent = currentPage;
-
-    if(currentPage === 1) {
-        btnPrev.disabled = true;
-        btnPrev.classList.add('disabledBtn');
-    }
-
-    if(btnNext.disabled) {
-        btnNext.disabled = false;
-        btnNext.classList.remove('disabledBtn');
+    try {
+        await showMovies(searchURL);
+    } catch (error) {
+        console.error('Erro ao carregar página anterior:', error);
     }
 });
 
-btnNext.addEventListener('click', () => {
-    if(btnPrev.disabled) {
-        btnPrev.disabled = false;
-        btnPrev.classList.remove('disabledBtn');
-    }
+btnNext.addEventListener('click', async () => {
+    clearMovies();
 
-    [...moviesContainer.children].forEach(filme => filme.remove());
-    
     currentPage++;
-    if(queryURL) {
-        queryURL = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(movieName)}&page=${currentPage}`;
-    }
-    showMovies(queryURL, currentPage);
+    const searchURL = buildQueryURL(movieName, currentPage);
 
-    numberPage.textContent = currentPage;
+    try {
+        await showMovies(searchURL);
+    } catch (error) {
+        console.error('Erro ao carregar próxima página:', error);
+    }
 });
+// End of the changing pages logic
