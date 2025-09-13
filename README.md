@@ -42,7 +42,8 @@ Com ele, você pode:
 │ │ │ ├── logo-dark-theme.png
 │ │ │ ├── logo-light-theme.png
 │ │ │ ├── previewDark.png
-│ │ │ └── previewLight.png
+│ │ │ ├── previewLight.png
+│ │ │ └── unavailable_cover.png
 │ │ └── scripts
 │ │   └── script.js
 │ ├── index.html
