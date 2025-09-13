@@ -10,8 +10,8 @@ const btnNext = document.querySelector('.next');
 const numberPage = document.querySelector('.numberPage');
 const main = document.querySelector('main');
 const moviesContainer = document.querySelector('.containerMovies');
+const form = document.querySelector('form');
 const inputMovieName = document.querySelector('#movieName');
-const btnSearchMovie = document.querySelector('.btnSearch');
 
 // Url parameters
 const API_KEY = '00a7e4e48d512ff2fd6a51f14146d5a7';
@@ -74,8 +74,12 @@ function showInputError() {
     }, 500);
 }
 
-async function searchMovie() {
-    const searchTerm = inputMovieName.value.trim();
+async function searchMovie(evt) {
+    evt.preventDefault();
+    
+    const formData = new FormData(form);
+
+    const searchTerm = formData.get('movieName');
 
     if(!searchTerm) {
         showInputError();
@@ -96,7 +100,7 @@ async function searchMovie() {
     updatePagination(); 
 }
 
-btnSearchMovie.addEventListener('click', searchMovie);
+form.addEventListener('submit', searchMovie);
 // End of the seach movie logic
 
 // Beginning of the details movie card logic
