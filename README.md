@@ -13,9 +13,11 @@ Com ele, você pode:
 
 - Tema claro:
 ![Preview do projeto](./src/images/previewLight.png)
+![Preview do projeto](./src/images/previewDetailsLight.png)
 
 - Tema escuro:
 ![Preview do projeto](./src/images/previewDark.png)
+![Preview do projeto](./src/images/previewDetailsDark.png)
 
 ---
 
