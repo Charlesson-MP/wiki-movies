@@ -137,7 +137,7 @@ function createDetailsCardHeader(detailsMovieContainer) {
     return detailsMovieCardHeader;
 }
 
-function createDetailsMovieCardCover(movie) {
+function createDetailsMovieCardCover(movie, certification) {
     const coverContainer = document.createElement('div');
     coverContainer.classList.add('detailsCardCover');
 
@@ -150,12 +150,14 @@ function createDetailsMovieCardCover(movie) {
         detailsCardCover.alt = `Capa indisponível`;
     }
 
-    coverContainer.appendChild(detailsCardCover);
+    const certificationCard = createCardCertification(certification);
+
+    coverContainer.append(detailsCardCover, certificationCard);
 
     return coverContainer;
 }
 
-function createDetailsMovieCardInfo(movie) {
+function createDetailsMovieCardInfo(movie, certification) {
     const detailsCardInfo = document.createElement('div');
     detailsCardInfo.classList.add('detailsCardInfo');
 
@@ -185,24 +187,29 @@ function createDetailsMovieCardInfo(movie) {
     const average = document.createElement('p');
     average.innerHTML = `<span>Média:</span> ${safeValue(movie.vote_average)}`;
 
+    const descriptors = certification.descriptors.length ? certification.descriptors.join(', ') : 'Indisponível';
+    const content = document.createElement('p');
+    content.innerHTML = `<span>Conteúdo:</span> ${descriptors}`;
+
     const overview = document.createElement('p');
     overview.innerHTML = `<span>Sinopse:</span> ${safeValue(movie.overview)}`;
 
-    detailsCardInfo.append(movieTitle, enTitle, originalLang, popularity, releaseDate, average, overview);
+    detailsCardInfo.append(movieTitle, enTitle, originalLang, popularity, releaseDate, average, content, overview);
 
     return detailsCardInfo;
 }
 
-function showDetailsMovieScreen(movie) {
+function showDetailsMovieScreen(movie, certification) {
     const detailsMovieContainer = createDetailsMovieContainer();
     
     const cardHeader = createDetailsCardHeader(detailsMovieContainer);
-    const cardCover = createDetailsMovieCardCover(movie);
-    const cardInfo = createDetailsMovieCardInfo(movie);
+    const cardCover = createDetailsMovieCardCover(movie, certification);
+    const cardInfo = createDetailsMovieCardInfo(movie, certification);
 
     const detailsMovieCard = createDetailsMovieCard(cardHeader, cardCover, cardInfo);
     detailsMovieContainer.appendChild(detailsMovieCard);
     main.appendChild(detailsMovieContainer);
+    console.log(certification);
 }
 // End of the details movie card logic
 
@@ -253,10 +260,10 @@ const certificationsMap = {
     }
 };
 
-async function createCardCertification(movie) {
+function createCardCertification(certification) {
     const certificationImage = document.createElement('img');
     certificationImage.classList.add('ageGroup');
-    const { ageGroup } = await getBrazilCertification(movie.id);
+    const { ageGroup } = certification;
 
     const data = certificationsMap[ageGroup];
 
@@ -266,13 +273,12 @@ async function createCardCertification(movie) {
     }else {
         certificationImage.setAttribute('src', './src/images/certification_unavailable.png');
         certificationImage.setAttribute('alt', 'Indicação de faixa etária indisponível');
-        certificationImage.classList.add('unavailable');
     }
 
     return certificationImage;
 }
 
-function createMovieCard(movie) {
+function createMovieCard(movie, certification) {
     const movieCard = document.createElement('div');
     movieCard.classList.add('cardMovie');
 
@@ -285,6 +291,8 @@ function createMovieCard(movie) {
         moviePoster.alt = 'Capa indisponível';
     }
 
+    const cardCertification = createCardCertification(certification);
+
     const overlayMovieCard = document.createElement('div');
     overlayMovieCard.classList.add('overlay');
 
@@ -294,11 +302,11 @@ function createMovieCard(movie) {
     const btnDetais = document.createElement('button');
     btnDetais.textContent = 'Detalhes';
 
-    btnDetais.addEventListener('click', () => showDetailsMovieScreen(movie));
+    btnDetais.addEventListener('click', () => showDetailsMovieScreen(movie, certification));
 
     overlayMovieCard.append(movieTitle, btnDetais);
 
-    movieCard.append(moviePoster, overlayMovieCard);
+    movieCard.append(moviePoster, cardCertification, overlayMovieCard);
 
     return movieCard;
 }
@@ -354,9 +362,9 @@ async function showMovies(URL) {
             return
         }
 
-        data.results.forEach(movie => {
-            const movieCard = createMovieCard(movie);
-            addCertificationToCard(movie, movieCard);
+        data.results.forEach(async (movie) => {
+            const certification = await getBrazilCertification(movie.id);
+            const movieCard = createMovieCard(movie, certification);
             moviesContainer.appendChild(movieCard);
         });
 
