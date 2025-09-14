@@ -438,6 +438,11 @@ main {
     overflow: scroll;
 }
 
+.detailsCardCover {
+    display: block;
+    margin: auto;
+}
+
 .detailsMovieCardDark {
     background-color: var(--dark-background);
     border: .1rem solid var(--secondary-text);
@@ -497,7 +502,7 @@ main {
         grid-area: header;
     }
 
-    .detailsMovieCard img {
+    .detailsCardCover {
         grid-area: cover;
     }
 
