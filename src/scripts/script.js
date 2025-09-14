@@ -58,7 +58,7 @@ themeToggle.addEventListener('change', () => {
 function buildQueryURL(searchTerm = '', page = 1) {
     const isSearch = searchTerm.trim().length > 0;
 
-    return isSearch ? `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(searchTerm)}&page=${page}` : `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=pt-BR&page=${page}`;
+    return isSearch ? `${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(searchTerm)}&page=${page}` : `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=pt-BR&page=${page}`;
 }
 
 function showInputError() {
@@ -181,7 +181,7 @@ function createDetailsMovieCardInfo(movie) {
     average.innerHTML = `<span>Média:</span> ${safeValue(movie.vote_average)}`;
 
     const overview = document.createElement('p');
-    overview.innerHTML = `<span>Descrição:</span> ${safeValue(movie.overview)}`;
+    overview.innerHTML = `<span>Sinopse:</span> ${safeValue(movie.overview)}`;
 
     detailsCardInfo.append(movieTitle, enTitle, originalLang, popularity, releaseDate, average, overview);
 
@@ -221,6 +221,52 @@ function clearMovies() {
     [...moviesContainer.children].forEach(movie => movie.remove());
 }
 
+const certificationsMap = {
+    'L': {
+        src: './src/images/certification_free.png',
+        alt: 'Indicado para todas as idades'
+    },
+    '10': {
+        src: './src/images/certification_10.png',
+        alt: 'Indicado para maiores de 10 anos'
+    },
+    '12': {
+        src: './src/images/certification_12.png',
+        alt: 'Indicado para maiores de 12 anos'
+    },
+    '14': {
+        src: './src/images/certification_14.png',
+        alt: 'Indicado para maiores de 14 anos'
+    },
+    '16': {
+        src: './src/images/certification_16.png',
+        alt: 'Indicado para maiores de 16 anos'
+    },
+    '18': {
+        src: './src/images/certification_18.png',
+        alt: 'Indicado para maiores de 18 anos'    
+    }
+};
+
+async function createCardCertification(movie) {
+    const certificationImage = document.createElement('img');
+    certificationImage.classList.add('ageGroup');
+    const { ageGroup } = await getBrazilCertification(movie.id);
+
+    const data = certificationsMap[ageGroup];
+
+    if(data) {
+        certificationImage.setAttribute('src', data.src);
+        certificationImage.setAttribute('alt', data.alt);
+    }else {
+        certificationImage.setAttribute('src', './src/images/certification_unavailable.png');
+        certificationImage.setAttribute('alt', 'Indicação de faixa etária indisponível');
+        certificationImage.classList.add('unavailable');
+    }
+
+    return certificationImage;
+}
+
 function createMovieCard(movie) {
     const movieCard = document.createElement('div');
     movieCard.classList.add('cardMovie');
@@ -252,6 +298,11 @@ function createMovieCard(movie) {
     return movieCard;
 }
 
+async function addCertificationToCard(movie, movieCard) {
+    const certification = await createCardCertification(movie);
+    movieCard.appendChild(certification);
+}
+
 function updatePagination(data) {
     btnPrev.disabled = data.page === 1;
     btnPrev.classList.toggle('disabledBtn', data.page === 1);
@@ -260,6 +311,29 @@ function updatePagination(data) {
     btnNext.classList.toggle('disabledBtn', data.page === data.total_pages);
 
     numberPage.textContent = data.page;
+}
+
+async function getBrazilCertification(movieId) {
+    const url = `${BASE_URL}/movie/${movieId}/release_dates?api_key=${API_KEY}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const ageGroupInfo = data.results.find(info => info.iso_3166_1 === 'BR');
+
+    if(!ageGroupInfo || !ageGroupInfo.release_dates.length) {
+        return {
+            ageGroup: 'Indisponível',
+            descriptors: []
+        };
+    }
+
+    const { certification, descriptors } = ageGroupInfo.release_dates[0];
+
+    return {
+        ageGroup: certification || 'Indisponível',
+        descriptors: descriptors || []
+    };
 }
 
 async function showMovies(URL) {
@@ -277,6 +351,7 @@ async function showMovies(URL) {
 
         data.results.forEach(movie => {
             const movieCard = createMovieCard(movie);
+            addCertificationToCard(movie, movieCard);
             moviesContainer.appendChild(movieCard);
         });
 
