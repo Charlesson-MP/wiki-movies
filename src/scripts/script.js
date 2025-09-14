@@ -138,6 +138,9 @@ function createDetailsCardHeader(detailsMovieContainer) {
 }
 
 function createDetailsMovieCardCover(movie) {
+    const coverContainer = document.createElement('div');
+    coverContainer.classList.add('detailsCardCover');
+
     const detailsCardCover = document.createElement('img');
     detailsCardCover.setAttribute('src', `${BASE_IMG_URL}${movie.poster_path}`);
     detailsCardCover.setAttribute('alt', `Capa do filme ${movie.title}`);
@@ -147,7 +150,9 @@ function createDetailsMovieCardCover(movie) {
         detailsCardCover.alt = `Capa indisponível`;
     }
 
-    return detailsCardCover;
+    coverContainer.appendChild(detailsCardCover);
+
+    return coverContainer;
 }
 
 function createDetailsMovieCardInfo(movie) {
