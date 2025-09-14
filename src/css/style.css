@@ -308,6 +308,17 @@ main {
     width: 15rem;
 }
 
+.cardMovie .ageGroup {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 3rem;
+}
+
+.cardMovie .unavailable {
+    width: 6rem;
+}
+
 .overlay {
     position: absolute;
     left: 0;
